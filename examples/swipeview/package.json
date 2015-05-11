@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "tabris": "1.0.0",
+    "swipeview": "../../swipeview"
+  },
+  "main": "swipeview.js"
+}

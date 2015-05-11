@@ -1,4 +1,4 @@
-require("tabris-js-incubator");
+require("swipeview");
 
 var page = tabris.create("Page", {
   title: "SwipeView"

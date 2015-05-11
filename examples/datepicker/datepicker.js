@@ -1,4 +1,4 @@
-require("tabris-js-incubator");
+require("datepicker");
 
 var page = tabris.create("Page", {topLevel: true, title: "DatePicker"});
 

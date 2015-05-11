@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "tabris": "1.0.0",
-    "tabris-incubator": "../.."
-  },
-  "main": "swipe-view.js"
-}

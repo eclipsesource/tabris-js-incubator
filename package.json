@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "license": "BSD-3-Clause",
   "homepage": "http://tabrisjs.com/",
-  "main": "main.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/eclipsesource/tabris-js-incubator.git"
