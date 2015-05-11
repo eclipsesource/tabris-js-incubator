@@ -1,4 +1,4 @@
-require("swipeview");
+require("tabris-swipeview");
 
 var page = tabris.create("Page", {
   title: "SwipeView"

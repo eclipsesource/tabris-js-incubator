@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "tabris": "1.0.0",
-    "datepicker": "../../datepicker"
+    "tabris-datepicker": "../../tabris-datepicker"
   },
   "main": "datepicker.js"
 }

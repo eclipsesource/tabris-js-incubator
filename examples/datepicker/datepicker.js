@@ -1,4 +1,4 @@
-require("datepicker");
+require("tabris-datepicker");
 
 var page = tabris.create("Page", {topLevel: true, title: "DatePicker"});
 
