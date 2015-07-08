@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2015 EclipseSource.
- * All rights reserved.
- */
-
 (function() {
 
   tabris.registerWidget("DatePicker", {
