@@ -1,11 +1,12 @@
 require("tabris-swipeview");
 
 var page = tabris.create("Page", {
+  topLevel: true,
   title: "SwipeView"
 });
 
 var controlsComposite = tabris.create("Composite", {
-  layoutData: {centerX: 0, top: 0, bottom: ["#swipeView", 0]}
+  layoutData: {centerX: 0, top: 0, bottom: "#swipeView"}
 }).appendTo(page);
 
 var textInput = tabris.create("TextInput", {
@@ -14,14 +15,14 @@ var textInput = tabris.create("TextInput", {
 }).appendTo(controlsComposite);
 
 tabris.create("Button", {
-  layoutData: {left: [controlsComposite.children().last(), 10], centerY: 0},
+  layoutData: {left: "prev() 10", centerY: 0},
   text: "lockLeft"
 }).appendTo(controlsComposite).on("select", function() {
   page.children("#swipeView").first().lockLeft(parseInt(textInput.get("text")));
 });
 
 tabris.create("Button", {
-  layoutData: {left: [controlsComposite.children().last(), 5], centerY: 0},
+  layoutData: {left: "prev() 5", centerY: 0},
   text: "lockRight"
 }).appendTo(controlsComposite).on("select", function() {
   page.children("#swipeView").first().lockRight(parseInt(textInput.get("text")));

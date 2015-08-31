@@ -2,12 +2,30 @@
 
   tabris.registerWidget("DatePicker", {
     _type: "rwt.widgets.DateTime",
+    _initProperties: {
+      style: ["DATE", "MEDIUM"],
+      datePattern: "MDY"
+    },
     _properties: {
       date: {
-        type: true, // TODO: introduce type "date"
+        type: "any", // TODO: introduce type "date"
         default: createCurrentDate(),
-        set: function(date) {
-          this._nativeSetDate(date);
+        access: {
+          set: function(name, value) {
+            var dateWithoutTime = stripTime(value);
+            this._nativeSetDate(dateWithoutTime);
+            this._storeProperty(name, dateWithoutTime);
+          },
+          get: function(name) {
+            var result = this._getStoredProperty(name);
+            if (result) {
+              return result;
+            }
+            var year = this._nativeGet("year");
+            var month = this._nativeGet("month");
+            var day = this._nativeGet("day");
+            return new Date(year, month, day);
+          }
         }
       }
     },
@@ -22,22 +40,11 @@
         }
       }
     },
-    _initProperties: {
-      style: ["DATE", "MEDIUM"],
-      datePattern: "MDY"
-    },
-    _setProperty: function(name, value, options) {
-      var val = name === "date" ? stripTime(value) : value;
-      this.super("_setProperty", name, val, options);
-      if (name === "date") {
-        this._triggerChangeEvent("date", val);
-      }
-    },
     _setProperties: function(properties, options) {
-      this.super("_setProperties", properties, options);
       if (!properties.date) {
         this._nativeSetDate(this.get("date"));
       }
+      this.super("_setProperties", properties, options);
     },
     _nativeSetDate: function(date) {
       this._nativeSet("year", date.getFullYear());

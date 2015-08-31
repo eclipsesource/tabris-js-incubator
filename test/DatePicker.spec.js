@@ -10,13 +10,13 @@ describe("DatePicker", function() {
 
   describe("when created", function() {
 
-    var datePicker, createCall, setCalls, createProperties;
+    var datePicker, createCall, createProperties, currentDate;
 
     beforeEach(function() {
       datePicker = tabris.create("DatePicker", {});
       createCall = nativeBridge.calls({op: "create"})[0];
-      setCalls = nativeBridge.calls({op: "set"});
       createProperties = createCall.properties;
+      currentDate = new Date();
     });
 
     it("rwt.widgets.DateTime is created", function() {
@@ -83,9 +83,8 @@ describe("DatePicker", function() {
 
     describe("get", function() {
       describe("date", function() {
-        it("returns default 'date' property without time", function() {
+        it("returns default 'date' property", function() {
           var date = datePicker.get("date");
-          var currentDate = new Date();
           expect(date.getDate()).toBe(currentDate.getDate());
           expect(date.getMonth()).toBe(currentDate.getMonth());
           expect(date.getFullYear()).toBe(currentDate.getFullYear());
@@ -101,11 +100,22 @@ describe("DatePicker", function() {
 
       var listener;
 
-      var checkEvent = function(value) {
+      beforeEach(function() {
+        listener = jasmine.createSpy();
+        spyOn(nativeBridge, "get").and.callFake(function(id, name) {
+          if (name === "year") {return 2015;}
+          if (name === "month") {return 3;}
+          if (name === "day") {return 30;}
+        });
+      });
+
+      var checkEvent = function(date) {
         expect(listener.calls.count()).toBe(1);
         expect(listener.calls.argsFor(0)[0]).toBe(datePicker);
         if (arguments.length > 0) {
-          expect(listener.calls.argsFor(0)[1]).toEqual(value);
+          expect(listener.calls.argsFor(0)[1].getFullYear()).toEqual(date.getFullYear());
+          expect(listener.calls.argsFor(0)[1].getMonth()).toEqual(date.getMonth());
+          expect(listener.calls.argsFor(0)[1].getDate()).toEqual(date.getDate());
           expect(listener.calls.argsFor(0)[2]).toEqual({});
         } else {
           expect(listener.calls.argsFor(0)[1]).toEqual({});
@@ -119,25 +129,11 @@ describe("DatePicker", function() {
         expect(listen[0].listen).toBe(true);
       };
 
-      beforeEach(function() {
-        listener = jasmine.createSpy();
-        spyOn(nativeBridge, "get").and.callFake(function(id, name) {
-          if (name === "year") {return 2015;}
-          if (name === "month") {return 3;}
-          if (name === "day") {return 30;}
-        });
-      });
-
       describe("select", function() {
         beforeEach(function() {
           datePicker.on("select", listener);
         });
-        it("gets fired upon date selection", function() {
-          tabris._notify(datePicker.cid, "Selection", {});
-          checkEvent(datePicker.get("date"));
-          checkListen("Selection");
-        });
-        it("updates 'date' propety upon date selection", function() {
+        it("gets fired upon date selection with natively got 'date'", function() {
           tabris._notify(datePicker.cid, "Selection", {});
           checkEvent(new Date(2015, 3, 30));
           checkListen("Selection");
@@ -147,7 +143,7 @@ describe("DatePicker", function() {
       describe("change:date", function() {
         it("gets fired upon 'date' property change", function() {
           datePicker.on("change:date", listener);
-          var date = new Date(2015, 3, 30);
+          var date = new Date(2015, 5, 30);
           datePicker.set("date", date);
           checkEvent(date);
           checkListen("Selection");

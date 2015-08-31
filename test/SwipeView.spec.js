@@ -108,8 +108,8 @@ describe("SwipeView", function() {
           swipe.trigger("resize", swipe, [0, 0, 300, 600], {});
         });
 
-        it("wraps the child in a full-sized Composite", function() {
-          expect(child.parent().type).toBe("Composite");
+        it("appends the child to the SwipeView", function() {
+          expect(child.parent().type).toBe("SwipeView");
           expect(JSON.stringify(child.parent().get("bounds")))
             .toBe(JSON.stringify({left: 0, top: 0, width: 300, height: 600}));
         });
@@ -122,7 +122,7 @@ describe("SwipeView", function() {
 
           expect(calls[1].op).toBe("call");
           expect(calls[1].method).toBe("add");
-          expect(calls[1].parameters).toEqual({index: 0, control: child.parent().cid});
+          expect(calls[1].parameters).toEqual({index: 0, control: child.cid});
         });
 
       });

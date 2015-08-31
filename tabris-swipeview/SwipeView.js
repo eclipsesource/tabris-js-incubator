@@ -1,11 +1,9 @@
 (function() {
 
-  var swipeItemWrapper = {};
-
   tabris.registerWidget("_Swipe", {
     _type: "tabris.Swipe",
     _properties: {
-      parent: true,
+      parent: "any",
       itemCount: "integer"
     },
     _events: {Swipe: true}
@@ -38,7 +36,15 @@
     },
 
     _addChild: function(child) {
-      swipeItemWrapper.wrapFor[tabris.device.get("platform")].call(this, child);
+      if (tabris.device.get("platform") === "Android") {
+        // Original Swipe child container is not spanned upon Swipe bounds
+        var wrapper = tabris.create("Composite", {layoutData: {left: 0, top: 0, right: 0, bottom: 0}});
+        child._parent = null;
+        child._setParent(wrapper);
+        addSwipeItem(this, wrapper);
+        return;
+      }
+      addSwipeItem(this, child);
     },
 
     _removeChild: function(child) {
@@ -56,28 +62,6 @@
       this._swipe._nativeCall("lockRight", {index: index});
     }
   });
-
-  swipeItemWrapper.wrapFor = {
-    iOS: function(child) {
-      // Swipe child container doesn't have bounds on iOS on resize
-      this.once("resize", function(swipe) {
-        var bounds = swipe.get("bounds");
-        var wrapper = tabris.create("Composite", {
-          layoutData: {left: 0, top: 0, width: bounds.width, height: bounds.height}
-        });
-        child._parent = null;
-        child._setParent(wrapper);
-        addSwipeItem(swipe, wrapper);
-      });
-    },
-    Android: function(child) {
-      // Original Swipe child container is not spanned upon Swipe bounds
-      var wrapper = tabris.create("Composite", {layoutData: {left: 0, top: 0, right: 0, bottom: 0}});
-      child._parent = null;
-      child._setParent(wrapper);
-      addSwipeItem(this, wrapper);
-    }
-  };
 
   function triggerSwipe(swipeData) {
     this.trigger("swipe", this, swipeData.item);
