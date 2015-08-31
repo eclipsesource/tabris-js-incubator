@@ -5,6 +5,6 @@
   "homepage": "http://tabrisjs.com/",
   "main": "DatePicker.js",
   "dependencies": {
-    "tabris": "1.0.0"
+    "tabris": ">=~1.0.0 <1.2.0"
   }
 }
