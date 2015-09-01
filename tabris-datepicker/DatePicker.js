@@ -9,18 +9,12 @@
     _properties: {
       date: {
         type: "any", // TODO: introduce type "date"
-        default: createCurrentDate(),
         access: {
           set: function(name, value) {
-            var dateWithoutTime = stripTime(value);
-            this._nativeSetDate(dateWithoutTime);
-            this._storeProperty(name, dateWithoutTime);
+            this._nativeSetDate(value);
+            this._triggerChangeEvent(name, value);
           },
-          get: function(name) {
-            var result = this._getStoredProperty(name);
-            if (result) {
-              return result;
-            }
+          get: function() {
             var year = this._nativeGet("year");
             var month = this._nativeGet("month");
             var day = this._nativeGet("day");
@@ -34,15 +28,14 @@
         name: "Selection",
         alias: "change:date",
         trigger: function() {
-          var date = new Date(this._nativeGet("year"), this._nativeGet("month"), this._nativeGet("day"));
-          this.set("date", date);
+          this._triggerChangeEvent("date", this.get("date"));
           this.trigger("select", this, this.get("date"), {});
         }
       }
     },
     _setProperties: function(properties, options) {
       if (!properties.date) {
-        this._nativeSetDate(this.get("date"));
+        this._nativeSetDate(createCurrentDate());
       }
       this.super("_setProperties", properties, options);
     },
@@ -55,10 +48,6 @@
 
   function createCurrentDate() {
     var date = new Date();
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  }
-
-  function stripTime(date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
 

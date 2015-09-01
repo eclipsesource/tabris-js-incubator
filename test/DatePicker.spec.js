@@ -1,11 +1,16 @@
 describe("DatePicker", function() {
 
-  var nativeBridge;
+  var nativeBridge, getNativeBridgeSpy;
 
   beforeEach(function() {
     nativeBridge = new NativeBridgeSpy();
     tabris._reset();
     tabris._init(nativeBridge);
+    getNativeBridgeSpy = spyOn(nativeBridge, "get").and.callFake(function(id, name) {
+      if (name === "year") {return 2015;}
+      if (name === "month") {return 3;}
+      if (name === "day") {return 30;}
+    });
   });
 
   describe("when created", function() {
@@ -55,18 +60,6 @@ describe("DatePicker", function() {
           expect(setCall.properties.month).toBe(3);
           expect(setCall.properties.year).toBe(2015);
         });
-        it("sets 'date' property without time", function() {
-          var date = new Date(1431093114000);
-          datePicker.set("date", date);
-          var returnedDate = datePicker.get("date");
-          expect(returnedDate.getDate()).toBe(8);
-          expect(returnedDate.getMonth()).toBe(4);
-          expect(returnedDate.getFullYear()).toBe(2015);
-          expect(returnedDate.getHours()).toBe(0);
-          expect(returnedDate.getMinutes()).toBe(0);
-          expect(returnedDate.getMilliseconds()).toBe(0);
-          expect(returnedDate.getSeconds()).toBe(0);
-        });
         it("doesn't overwrite passed date with date without time", function() {
           var date = new Date(1431093114000);
           datePicker.set("date", date);
@@ -83,11 +76,11 @@ describe("DatePicker", function() {
 
     describe("get", function() {
       describe("date", function() {
-        it("returns default 'date' property", function() {
+        it("returns native widget's date", function() {
           var date = datePicker.get("date");
-          expect(date.getDate()).toBe(currentDate.getDate());
-          expect(date.getMonth()).toBe(currentDate.getMonth());
-          expect(date.getFullYear()).toBe(currentDate.getFullYear());
+          expect(date.getDate()).toBe(30);
+          expect(date.getMonth()).toBe(3);
+          expect(date.getFullYear()).toBe(2015);
           expect(date.getHours()).toBe(0);
           expect(date.getMinutes()).toBe(0);
           expect(date.getMilliseconds()).toBe(0);
@@ -102,11 +95,6 @@ describe("DatePicker", function() {
 
       beforeEach(function() {
         listener = jasmine.createSpy();
-        spyOn(nativeBridge, "get").and.callFake(function(id, name) {
-          if (name === "year") {return 2015;}
-          if (name === "month") {return 3;}
-          if (name === "day") {return 30;}
-        });
       });
 
       var checkEvent = function(date) {
@@ -141,9 +129,15 @@ describe("DatePicker", function() {
       });
 
       describe("change:date", function() {
+        it("gets fired when 'select' is fired", function() {
+          datePicker.on("change:date", listener);
+          tabris._notify(datePicker.cid, "Selection", {});
+          checkEvent(new Date(2015, 3, 30));
+          checkListen("Selection");
+        });
         it("gets fired upon 'date' property change", function() {
           datePicker.on("change:date", listener);
-          var date = new Date(2015, 5, 30);
+          var date = new Date(2015, 3, 30);
           datePicker.set("date", date);
           checkEvent(date);
           checkListen("Selection");
