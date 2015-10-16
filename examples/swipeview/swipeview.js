@@ -39,17 +39,19 @@ swipeView.on("swipe", function(widget, item) {
 });
 
 ["red", "green", "blue"].forEach(function(color, i) {
+  var swipeItem = tabris.create("SwipeItem").appendTo(swipeView);
   tabris.create("Composite", {
     background: color,
     layoutData: {left: 0, top: 0, width: 100 * (i + 1), height: 100 * (i + 1)}
-  }).appendTo(swipeView);
+  }).appendTo(swipeItem);
 });
 
 ["red", "green", "blue"].forEach(function(color) {
+  var swipeItem = tabris.create("SwipeItem").appendTo(swipeView);
   tabris.create("Composite", {
     background: color,
     layoutData: {left: 0, top: 0, right: 0, bottom: 0}
-  }).appendTo(swipeView);
+  }).appendTo(swipeItem);
 });
 
 page.open();

@@ -1,11 +1,33 @@
 (function() {
 
+  tabris.registerWidget("SwipeItem", {
+
+    _type: "rwt.widgets.Composite",
+
+    _supportsChildren: true,
+
+    _create: function(properties) {
+      var _properties = {};
+      if (device.platform === "iOS") {
+        _properties.layoutData = {left: 0, top: 0, right: 0, bottom: 0};
+      }
+      var safeProperties = omit(properties, ["layoutData"]);
+      this.super("_create", extend(safeProperties, _properties));
+      return this;
+    },
+
+    _setParent: function(parent) {
+      if (!(parent instanceof tabris.SwipeView)) {
+        throw new Error("SwipeItem must be a child of a SwipeView");
+      }
+      tabris.Widgets._setParent.call(this, parent);
+    }
+
+  });
+
   tabris.registerWidget("_Swipe", {
     _type: "tabris.Swipe",
-    _properties: {
-      parent: "any",
-      itemCount: "integer"
-    },
+    _properties: {parent: "any", itemCount: "integer"},
     _events: {Swipe: true}
   });
 
@@ -36,20 +58,20 @@
     },
 
     _addChild: function(child) {
-      if (tabris.device.get("platform") === "Android") {
-        // Original Swipe child container is not spanned upon Swipe bounds
-        var wrapper = tabris.create("Composite", {layoutData: {left: 0, top: 0, right: 0, bottom: 0}});
-        child._parent = null;
-        child._setParent(wrapper);
-        addSwipeItem(this, wrapper);
-        return;
+      if (!(child instanceof tabris.SwipeItem)) {
+        throw new Error("Only a SwipeItem can be appended to a SwipeView");
       }
-      addSwipeItem(this, child);
+      tabris.Widgets._addChild.call(this, child);
+      this._swipe._nativeSet("itemCount", this._children.length);
+      this._swipe._nativeCall("add", {
+        index: this._children.indexOf(child),
+        control: child.cid
+      });
     },
 
     _removeChild: function(child) {
       var index = this._children.indexOf(child);
-      tabris.Proxy.prototype._removeChild.apply(this, arguments);
+      tabris.Widgets._removeChild.call(this, child);
       this._swipe._nativeSet("itemCount", this._children.length);
       this._swipe._nativeCall("remove", {items: [index]});
     },
@@ -67,23 +89,24 @@
     this.trigger("swipe", this, swipeData.item);
   }
 
-  function omit(object, keys) {
-    var result = {};
-    for (var key in object) {
-      if (keys.indexOf(key) === -1) {
-        result[key] = object[key];
-      }
-    }
-    return result;
-  }
-
-  function addSwipeItem(swipeView, swipeItem) {
-    tabris.Widgets._addChild.call(swipeView, swipeItem);
-    swipeView._swipe._nativeSet("itemCount", swipeView._children.length);
-    swipeView._swipe._nativeCall("add", {
-      index: swipeView._children.indexOf(swipeItem),
-      control: swipeItem.cid
-    });
-  }
-
 })();
+
+function omit(object, keys) {
+  var result = {};
+  for (var key in object) {
+    if (keys.indexOf(key) === -1) {
+      result[key] = object[key];
+    }
+  }
+  return result;
+}
+
+function extend(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i];
+    for (var name in source) {
+      target[name] = source[name];
+    }
+  }
+  return target;
+}
