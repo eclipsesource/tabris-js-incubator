@@ -5,6 +5,6 @@
   "homepage": "http://tabrisjs.com/",
   "main": "SwipeView.js",
   "dependencies": {
-    "tabris": "~1.2.0"
+    "tabris": "^1.2.0"
   }
 }

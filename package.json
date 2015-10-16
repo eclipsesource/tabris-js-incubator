@@ -8,8 +8,8 @@
     "url": "https://github.com/eclipsesource/tabris-js-incubator.git"
   },
   "devDependencies": {
-    "jasmine-core": "~2.1.3",
-    "tabris": "~1.2.0",
-    "npm": "~2.1.12"
+    "jasmine-core": "^2.1.3",
+    "tabris": "^1.2.0",
+    "npm": "^2.1.12"
   }
 }
