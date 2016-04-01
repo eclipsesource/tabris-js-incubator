@@ -12,7 +12,7 @@
         _properties.layoutData = {left: 0, top: 0, right: 0, bottom: 0};
       }
       var safeProperties = omit(properties, ["layoutData"]);
-      this.super("_create", extend(safeProperties, _properties));
+      this._super("_create", [extend(safeProperties, _properties)]);
       return this;
     },
 
@@ -20,7 +20,7 @@
       if (!(parent instanceof tabris.SwipeView)) {
         throw new Error("SwipeItem must be a child of a SwipeView");
       }
-      tabris.Widgets._setParent.call(this, parent);
+      tabris.Widget.prototype._setParent.call(this, parent);
     }
 
   });
@@ -50,7 +50,7 @@
     },
 
     _create: function(properties) {
-      this.super("_create", omit(properties, ["itemCount"]));
+      this._super("_create", [omit(properties, ["itemCount"])]);
       this._nativeSet("data", {swipe: true});
       this._swipe = tabris.create("_Swipe", {itemCount: 0});
       tabris._nativeBridge.set(this._swipe.cid, "parent", this.cid);
@@ -61,7 +61,7 @@
       if (!(child instanceof tabris.SwipeItem)) {
         throw new Error("Only a SwipeItem can be appended to a SwipeView");
       }
-      tabris.Widgets._addChild.call(this, child);
+      tabris.Widget.prototype._addChild.call(this, child);
       this._swipe._nativeSet("itemCount", this._children.length);
       this._swipe._nativeCall("add", {
         index: this._children.indexOf(child),
@@ -70,8 +70,8 @@
     },
 
     _removeChild: function(child) {
+      tabris.Widget.prototype._removeChild.call(this, child);
       var index = this._children.indexOf(child);
-      tabris.Widgets._removeChild.call(this, child);
       this._swipe._nativeSet("itemCount", this._children.length);
       this._swipe._nativeCall("remove", {items: [index]});
     },
