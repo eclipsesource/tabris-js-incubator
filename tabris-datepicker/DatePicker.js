@@ -37,7 +37,7 @@
       if (!properties.date) {
         this._nativeSetDate(createCurrentDate());
       }
-      this._super("_setProperties", properties, options);
+      this._super("_setProperties", arguments);
     },
     _nativeSetDate: function(date) {
       this._nativeSet("year", date.getFullYear());
